@@ -20,7 +20,7 @@ Para cambiar de bd
 show collections
 Para ver las colecciones de una bd
 
-db.movies.find().pretty()
+db.collection.find().pretty()
 Para ver todos los documentos de la coleccion movies de la bd video
 
 mongo "mongodb+srv://cluster0-lpbtc.mongodb.net/test" --username m001-student --password m001-mongodb-basics
@@ -45,6 +45,21 @@ Para cargar el archivo js
 
 Operaciones CRUD
 -----------------
+
+Filtrado de documentos (Y)
+Compass
+{rated: "PG-13"}
+{rated: "PG-13", year: 2009}
+{wind.type: "C"}
+{"wind.direction.angle": 290}
+
+Mongoshell
+use video
+db.movieDetails.find({"rated": "PG-13"}).pretty()
+-- Se requieren comillas cuando se usa la motacion del punto
+use 100YWeatherSmall
+db.collection.find({"wind.direction.angle": 290}).pretty()
+
 
 Insert
 -----------------
