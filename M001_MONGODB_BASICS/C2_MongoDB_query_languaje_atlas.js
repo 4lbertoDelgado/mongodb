@@ -47,6 +47,8 @@ Operaciones CRUD
 -----------------
 
 Filtrado de documentos (Y)
+------------------------------
+
 Compass
 {rated: "PG-13"}
 {rated: "PG-13", year: 2009}
@@ -55,10 +57,32 @@ Compass
 
 Mongoshell
 use video
+Se requieren comillas cuando se usa la motacion del punto
+
+pretty() muestra los resultados de una forma mas legible
+count() muestra la cantidad de los resultados
+
 db.movieDetails.find({"rated": "PG-13"}).pretty()
--- Se requieren comillas cuando se usa la motacion del punto
+db.movieDetails.find({"awards.wins": 2, "awards.nominations": 2}).count()
+db.movieDetails.find({"rated": "PG", "awards.nominations": 10}).count()
+
+Filtrado de documentos Array
+------------------------------
+Los elementos filtrados son respetando exactamente el orden indicado
+db.movieDetails.find({"actors": ["Jeff Bridges", "Tim Robbins"]}).pretty()
+
+Los elementos filtrados son los que contengan a Jeff Bridges en su array
+db.movieDetails.find({"actors": "Jeff Bridges"}).pretty()
+
+Los elementos filtrados son los que contienen a Jeff Bridges en la pocision 0 en su matriz
+db.movieDetails.find({"actors.0": "Jeff Bridges"}).pretty()
+
+
 use 100YWeatherSmall
-db.collection.find({"wind.direction.angle": 290}).pretty()
+db.collectionName.find({"wind.direction.angle": 290}).pretty()
+
+
+
 
 
 Insert
