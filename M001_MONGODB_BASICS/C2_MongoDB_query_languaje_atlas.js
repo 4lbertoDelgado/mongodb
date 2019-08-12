@@ -237,7 +237,111 @@ incrementa el valor almacenado
 db.movieDetails.updateOne({"title": "The Martian"}, {$inc: {"tomato.reviews": 3, "tomato.userReviews": 25}})
 
 $addToSet
-Actualizara una matriz con nuevos valores, solo si el valor no esta contenido en la matriz
+Actualizara una matriz con nuevos valores solo si el valor no esta contenido en la matriz
 
-$pop $pull
+$pop 
 Puedo sacar el primero o el ultimo elemento de una matriz
+
+$pullAll
+Puedo eliminar todos los valores que coinciden con algunos criterios
+
+$push
+Impulsar nuevos valores al array
+Push crea una matriz si aun no existe
+db.movieDetails.updateOne({
+	title: "The Martian"
+}, {
+	$push: ({
+		reviews: {
+			rating: 4.5,
+			date: ISODate("2016-01-12T09:00:00Z"),
+			reviewer: "Spencer H.",
+			text: "reviewText1"
+		}
+	})
+})
+
+El modificador $each para $push 
+Permite que $push agregue cada uno de estos documentos como elementos individuales
+Si no usamos $each haria que toda la matriz sea agregada como un unico elemento en esa matriz
+Aunque en algunas circunstancias eso podria ser lo que queremos
+db.movieDetails.updateOne({
+	title: "The Martian"
+}, {
+	$push: ({
+		reviews: {
+			$each: [{
+				rating: 0.5,
+				date: ISODate("2016-01-12T09:00:00Z"),
+				reviewer: "Spencer H.",
+				text: "reviewText2"
+			}, {
+				rating: 5,
+				date: ISODate("2016-01-12T09:00:00Z"),
+				reviewer: "Spencer H.",
+				text: "reviewText3"
+			}, {
+				rating: 3.5,
+				date: ISODate("2016-01-12T09:00:00Z"),
+				reviewer: "Spencer H.",
+				text: "reviewText4"
+			}]
+		}
+	})
+})
+
+updateMany
+Hara la actualizacion a todos los documentos qu coincidan con el filtro
+Aqui estamos usando el operador $unset eliminara todos los campos enumerados ahi
+db.movieDetails.updateMany({
+	rated: null
+}, {
+	$unset :{
+		rated: ""
+	}
+})
+
+
+Upserts
+Situaciones en las que los operadores de seleccion poueden en realidad crear nuevos documentos
+En la siguiente consulta, busco si el imdb.id existe, y si existe lo actualizo 
+Usando updateOne con la opcion upsert significa que no necesitaba consultar primero la coleccion para ver si el documento ya existio
+y luego hacer una segunda consulta para insertar. dejo que mongoDB haga todo el trabajo por mi
+Esto significa que si el filtro no funciona, el documento que se establece en set, se inserta a la coleccion.
+Es decir, el siguiente ejemplo, actualiza los documentos que coinciden con el filtro. y si no hay ninguno, inserte los documentos de actualizacion como un nuevo documento en la coleccion
+
+db.movieDetails.updateOne({
+	"imdb.id": detail.imdb.id
+}, {
+	$set: detail
+}, { 
+	upsert: true
+})
+
+
+replaceOne
+Actualiza un documento que conincide con el filtro especificado
+No puede contener operadores de actualizacion
+Aplica los cambion solo en un documento, el primero que encuentra que haga matched con el filtro
+
+updateOne vs replaceOne
+updateOne esta diseñado para actualizar un conjunto especifico de valores en un documento, Solo se actualizaran los campos especificados de acuerdo al uso de los operadores de actualizacion
+replaceOne reemplazara completamente los documentos. Todos los cambios iran de ida y vuelta desde su aplicacion  
+Por un lado ambos hacen exacamente lo mismo
+execto por el hecho que en replaceOne estamos pasando por completo la carga util de nuestro nuevo documento
+
+let filter = {title: "House, M.D., Season Four: New Beginning"}
+let doc = db.movieDetails.findOne(filter)
+doc.poster
+doc.poster = "https://www.imdb.com/title/tt1329164/mediaviewer/rm2619416576"
+doc.genres
+doc.genres.push("TV Series")
+db.movieDetails.replaceOne(filter, doc)
+
+
+DELETE
+---------------------
+1er argumento: filtro
+db.reviews.deleteOne({_id: ObjectId("5d51d3fe99cfbb4a21d8dca1")})
+db.reviews.deleteMany({reviewer_id: 759723314})
+
