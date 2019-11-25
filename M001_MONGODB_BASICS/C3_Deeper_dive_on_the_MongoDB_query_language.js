@@ -36,5 +36,33 @@ db.movieDetails.find({writers: {$in: ["Ethan Coen", "Joel Coen"]}}, {_id: 0, tit
 /* Operadores de Elementos */
 /* 
     Operadores que nos permiten detectar la presencia o ausencia de un campo
-    
 */
+// $exists para validar si un campo existe o no existe
+db.data .find({atmosphericPressureChange: {$exists: false}}).count()
+
+/* Operadores Logicos */
+
+// $and Une cláusulas de consulta con un AND lógico y devuelve todos los documentos que coinciden con las condiciones de ambas cláusulas
+// $or Une las cláusulas de consulta con un OR lógico y devuelve todos los documentos que coinciden con las condiciones de cualquiera de las cláusulas.
+// $nor Unir las cláusulas de consulta con un NOR lógico devuelve todos los documentos que no coinciden con ambas cláusulas.
+// $not Invierte el efecto de una expresión de consulta y devuelve documentos que no coinciden con la expresión de consulta.
+db.shipwrecks .find({$or: [{watlev: {$eq: "always dry"}}, {depth: {$eq: 0}}]}).count()
+
+/* Operadores con Array */
+
+// $all Coincide con matrices que contienen todos los elementos especificados en la consulta.
+db.data.find({sections: {$all : ["AG1", "MD1", "OA1"]}}).count()
+
+// $elemMatch coincide con documentos que contienen un campo de matriz con al menos un elemento que coincide con todos los criterios de consulta especificados.
+//Cuántos documentos en la colección results.surveys contienen una puntuación de 7 para el producto abc
+db.surveys.find({results: {$elemMatch: {product: "abc", score: {$eq: 7}}}}).count()
+
+// $size Selecciona documentos si el campo de matriz tiene un tamaño especificado.
+db.data.find({sections: {$size : 2}}).count()
+
+// $regex Selecciona documentos donde los valores coinciden con una expresión regular especificada.
+// Filtra todos los documentos que en el campo text empicen con la palabra Won sin importar el numero de caracteres siguientes
+db.movieDetails.find({"awards.text": {$regex: /^Won .*/}}).pretty()
+
+// documentos contienen al menos una puntuación en la matriz de resultados que es mayor o igual que 70 y menor que 80
+db.scores.find({results: {$elemMatch: {$gte: 70, $lt: 80}}}).count()
